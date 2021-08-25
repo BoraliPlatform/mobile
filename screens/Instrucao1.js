@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const slides = [
     {
@@ -29,6 +30,9 @@ const Instrucao1 = () => {
     function renderSlides({ item }){
         return(
             <View style={{flex:1}}>
+                 <LinearGradient // Background Linear Gradient
+                    colors={['#e54f4f', '#fff']}
+                    style={styles.background}/>
                 <Image source={item.image}
                     style={{
                         paddingTop: 400,
@@ -65,13 +69,25 @@ const Instrucao1 = () => {
                     backgroundColor: '#000',
                     width: 30 
                 }}
+                style={{backgroundColor:'#fff'}}
                 renderPrevButton={() => <Text>Anterior</Text>}
                 renderNextButton={() => <Text>Próximo</Text>}
                 renderDoneButton={() => <Text>Ir para o App!</Text>}
+                onDone={() => console.log('ok')}
             />
         );
     }
     
 }
+
+const styles = StyleSheet.create({
+    background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 300,
+      },
+});
 
 export default Instrucao1;
