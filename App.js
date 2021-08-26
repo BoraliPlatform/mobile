@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './screens/Home';
 import Instrucao1 from './screens/Instrucao1';
+import Mapa from './screens/Mapa';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ function MyStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
        <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Instrucao1" component={Instrucao1} />
+      <Stack.Screen name="Mapa" component={Mapa}/>
     </Stack.Navigator>
   );
 }

@@ -24,7 +24,7 @@ const slides = [
     }
 ];
 
-const Instrucao1 = () => {
+const Instrucao1 = ({navigation}) => {
     const [showHome, setShowHome] = useState(false);
 
     function renderSlides({ item }){
@@ -73,7 +73,7 @@ const Instrucao1 = () => {
                 renderPrevButton={() => <Text>Anterior</Text>}
                 renderNextButton={() => <Text>Próximo</Text>}
                 renderDoneButton={() => <Text>Ir para o App!</Text>}
-                onDone={() => console.log('ok')}
+                onDone={() => navigation.navigate("Mapa")}
             />
         );
     }

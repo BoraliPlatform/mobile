@@ -5,7 +5,7 @@ const Home = ({navigation}) => {
   <SafeAreaView style={styles.container}>
     <ScrollView style={styles.scrollView}>
         <TouchableOpacity onPress={() => navigation.navigate("Instrucao1")}>
-        <Image source={require('../assets/img/boraliLogo.png')} style={styles.img} />
+        <Image source={require('../assets/img/iconBORALI.png')} style={styles.img} />
         <Text style={styles.text}>Borali</Text>
         </TouchableOpacity>
     </ScrollView>
@@ -23,9 +23,8 @@ const styles = StyleSheet.create({
   img: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 56,
-    height: 82,
-    marginBottom: 5,
+    width: 102,
+    height: 102,
     marginTop: 250,
     alignSelf: 'center',
 },
@@ -34,12 +33,12 @@ scrollView: {
 },
 text: {
   fontSize: 20,
-  marginLeft: 8,
+  marginHorizontal: 50,
   alignItems: 'center',
-    justifyContent: 'center',
-    maxWidth: 200,
-    fontWeight: 'bold',
-    color: "#000",
+  justifyContent: 'center',
+  maxWidth: 200,
+  fontWeight: 'bold',
+  color: "#000",
 },
 });
 
