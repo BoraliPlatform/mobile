@@ -7,6 +7,7 @@ import  {  GooglePlacesAutocomplete  }  from  'react-native-google-places-autoco
 import config from '../config/index.json';
 import MapViewDirections from 'react-native-maps-directions';
 import database from '../config/firebaseConfig';
+import { Value } from 'react-native-reanimated';
 
 const Mapa = ({navigation}) => {
     const [origin, setOrigin] = useState(null);
@@ -21,6 +22,7 @@ const Mapa = ({navigation}) => {
             })
             setVendedores(list)
             console.log(list)
+            console.log(list[0].Lat)
         })    
     }, [])
 
@@ -50,16 +52,25 @@ const Mapa = ({navigation}) => {
             initialRegion={origin}
             showsUserLocation={true}
             >
-            <Marker coordinate={{ latitude: -1.449709, longitude: -48.477707}}>
-                    <Callout>
-                        <Text>Coxinha do João</Text>
-                    </Callout>
+            <Marker coordinate={{ latitude: -1.449709, longitude: -48.477707}}
+                    title="Coxinha do João"
+                    description="Coxinha - R$3,00"> 
                 </Marker>
-            <Marker coordinate={{ latitude: -1.451739, longitude: -48.474831}}>
-                    <Callout>
-                        <Text>Sushi do Pedro</Text>
-                    </Callout>
-                </Marker>
+            <Marker coordinate={{ latitude: -1.451739, longitude: -48.474831}}
+                    title="Sushi do Pedro"
+                    description="Sushi - R$5,00">
+                        <Callout tooltip>
+                            <View>
+                                <View style={style.bubble}>
+                                    <Text style={style.name}> Sushi do Pedro</Text>
+                                    <Text>Sushi - R$5,00</Text>
+                                    <Image style={style.image} source={require('../assets/banner/sushiBANNER.jpg')}/>
+                                </View>
+                                <View style={style.arrowBorder}/>
+                                <View style={style.arrow}/>
+                            </View>
+                        </Callout>
+            </Marker>
             {destination && 
               <MapViewDirections
                  origin={origin}
@@ -134,6 +145,41 @@ const style = StyleSheet.create({
         fontWeight: 'normal',
         color: "#fff",
         backgroundColor: "#474a51",
+    },
+    //Callout Bubble
+    bubble: {
+        flexDirection: 'row',
+        alignSelf: 'flex-start',
+        backgroundColor: '#fff',
+        borderRadius: 6,
+        borderColor: '#ccc',
+        borderWidth: 0.5,
+        padding: 15,
+        width: 150, 
+    },
+    name: {
+        fontSize: 16,
+        marginBottom: 5,
+    },
+    arrow: {
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        borderTopColor: '#fff',
+        borderWidth: 16,
+        alignSelf: 'center',
+        marginTop: -32,
+    },
+    arrowBorder: {
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        borderTopColor: '#007a87',
+        borderWidth: 16,
+        alignSelf: 'center',
+        marginTop: -0.5,
+    },
+    image: {
+        width: 120,
+        height: 80,
     },
 });
 export default Mapa;
