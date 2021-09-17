@@ -3,106 +3,97 @@ import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaVi
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import  {  GooglePlacesAutocomplete  }  from  'react-native-google-places-autocomplete' ;
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import config from '../config/index.json';
 import MapViewDirections from 'react-native-maps-directions';
 import database from '../config/firebaseConfig';
-import { Value } from 'react-native-reanimated';
 
-const Mapa = ({navigation}) => {
+const Mapa = ({ navigation }) => {
     const [origin, setOrigin] = useState(null);
     const [destination, setDestination] = useState(null);
     const [vendedores, setVendedores] = useState([]);
-    
+
     useEffect(() => {
-        database.collection("cadastroVendedor").onSnapshot((query) =>{
+        database.collection("cadastroVendedor").onSnapshot((query) => {
             const list = []
-            query.forEach((doc) =>{
-                list.push({...doc.data(), id: doc.id })
+            query.forEach((doc) => {
+                list.push({ ...doc.data(), id: doc.id })
             })
             setVendedores(list)
-            console.log(list)
-            console.log(list[0].Lat)
-        })    
+            //console.log(list)
+            //console.log(list[0].Lat)
+        })
     }, [])
 
     useEffect(() => {
-        (async function(){
+        (async function () {
             const { status, permissions } = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND);
             if (status === 'granted') { //acao caso o usuario permita liberar a localizacao para o app
-                let location = await Location.getCurrentPositionAsync({enableHighAccuracy: true});
+                let location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
                 setOrigin({
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
                     latitudeDelta: 0.00922, //proximidade do satelite
                     longitudeDelta: 0.00421, //0.0 >>> menos proximo - 0.00 mais proximo
                 })
-                console.log(location);
+                //console.log(location);
             } else {  //acao caso o usuario NAO permita liberar a localizacao para o app
                 console.log("Location permission not granted");
-                throw new Error('Location permission not granted');              
+                throw new Error('Location permission not granted');
             }
         })();
     }, []);
 
-    return(
+    function mapMarkers() {
+        return vendedores.map(vendedor => (
+            <Marker coordinate={{ latitude: vendedor.Lat, longitude: vendedor.Lng }}
+                title={vendedor.Nome}
+                description={vendedor.Descricao}
+                key={vendedor.id}>
+            </Marker>
+        ))
+    }
+    return (
         <View style={style.container}>
             <MapView style={style.map}
-            provider={PROVIDER_GOOGLE}
-            initialRegion={origin}
-            showsUserLocation={true}
+                provider={PROVIDER_GOOGLE}
+                initialRegion={origin}
+                showsUserLocation={true}
             >
-            <Marker coordinate={{ latitude: -1.449709, longitude: -48.477707}}
-                    title="Coxinha do João"
-                    description="Coxinha - R$3,00"> 
-                </Marker>
-            <Marker coordinate={{ latitude: -1.451739, longitude: -48.474831}}
-                    title="Sushi do Pedro"
-                    description="Sushi - R$5,00">
-                        <Callout tooltip>
-                            <View>
-                                <View style={style.bubble}>
-                                    <Text style={style.name}> Sushi do Pedro</Text>
-                                    <Text>Sushi - R$5,00</Text>
-                                    <Image style={style.image} source={require('../assets/banner/sushiBANNER.jpg')}/>
-                                </View>
-                                <View style={style.arrowBorder}/>
-                                <View style={style.arrow}/>
-                            </View>
-                        </Callout>
-            </Marker>
-            {destination && 
-              <MapViewDirections
-                 origin={origin}
-                 destination={destination}
-                 apikey={config.googleApi} 
-                 strokeWidth={3}
-                 onReady={result=>{
-                     console.log(result);
-                 }}
-                 />
-            }
+                {
+                    mapMarkers()
+                }
+                {destination &&
+                    <MapViewDirections
+                        origin={origin}
+                        destination={destination}
+                        apikey={config.googleApi}
+                        strokeWidth={3}
+                        onReady={result => {
+                            //console.log(result);
+                        }}
+                    />
+                }
             </MapView>
 
             <View style={style.search}>
-            <GooglePlacesAutocomplete
-                placeholder='Qual local você procura?'
-                onPress={(data, details = null) => {
-                    setDestination({
-                        latitude: details.geometry.location.lat,
-                        longitude: details.geometry.location.lng,
-                        latitudeDelta: 0.00922, //proximidade do satelite
-                        longitudeDelta: 0.00421, //0.0 >>> menos proximo - 0.00 mais proximo
-                    });
-                    console.log(destination);
-                }}
-                query={{
-                    key: config.googleApi,
-                    language: 'pt-br',
-                }}
-                enablePoweredByContainer={false}
-                fetchDetails={true}
-                styles={{listView:{height:100}}}
+                <GooglePlacesAutocomplete
+                    placeholder='Qual local você procura?'
+                    onPress={(data, details = null) => {
+                        setDestination({
+                            latitude: details.geometry.location.lat,
+                            longitude: details.geometry.location.lng,
+                            latitudeDelta: 0.00922, //proximidade do satelite
+                            longitudeDelta: 0.00421, //0.0 >>> menos proximo - 0.00 mais proximo
+                        });
+                    }}
+                    query={{
+                        key: config.googleApi,
+                        language: 'pt-br',
+                    }}
+                    enablePoweredByContainer={false}
+                    fetchDetails={true}
+                    styles={{ listView: { height: 100 } }}
                 />
             </View>
         </View>
@@ -116,11 +107,11 @@ const style = StyleSheet.create({
         backgroundColor: "#f8dbd3",
         justifyContent: 'center',
     },
-    map:{
+    map: {
         height: '70%',
         backgroundColor: '#000',
     },
-    search:{
+    search: {
         height: '30%',
         backgroundColor: '#ffff',
     },
@@ -133,7 +124,7 @@ const style = StyleSheet.create({
         fontWeight: 'normal',
         color: "#fff",
         backgroundColor: "#ec5c54",
-      },
+    },
     text2: {
         height: '25%',
         paddingHorizontal: 'center',
@@ -155,7 +146,7 @@ const style = StyleSheet.create({
         borderColor: '#ccc',
         borderWidth: 0.5,
         padding: 15,
-        width: 150, 
+        width: 150,
     },
     name: {
         fontSize: 16,
