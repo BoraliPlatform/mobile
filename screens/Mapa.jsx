@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity, SafeAreaView, FlatList, Button, TouchableWithoutFeedback } from 'react-native';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+import uuid from "react-native-uuid"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import config from '../config/index.json';
 import MapViewDirections from 'react-native-maps-directions';
@@ -13,6 +14,21 @@ const Mapa = ({ navigation }) => {
     const [origin, setOrigin] = useState(null);
     const [destination, setDestination] = useState(null);
     const [vendedores, setVendedores] = useState([]);
+    const [vendedorMarcado, setVendedorMarcado] = useState([])
+
+    function handleSetVendedor(vendedor) {
+        const { Cardapio } = vendedor
+        const cardapioFormatted = []
+        Cardapio.forEach(item => {
+            const itemFormatted = item.split(' ')
+            cardapioFormatted.push({
+                id: String(uuid.v4()),
+                name: itemFormatted[0],
+                price: itemFormatted[1]
+            })
+        })
+        setVendedorMarcado(cardapioFormatted)
+    }
 
     useEffect(() => {
         database.collection("cadastroVendedor").onSnapshot((query) => {
@@ -21,7 +37,7 @@ const Mapa = ({ navigation }) => {
                 list.push({ ...doc.data(), id: doc.id })
             })
             setVendedores(list)
-            console.log(list)
+            // console.log(list)
             //console.log(list[0].Lat)
         })
     }, [])
@@ -51,6 +67,7 @@ const Mapa = ({ navigation }) => {
                 title={vendedor.Nome}
                 description={vendedor.Descricao}
                 key={vendedor.id}
+                onPress={() => handleSetVendedor(vendedor)}
                 icon={require('../assets/img/map_marker.png')}
                 style={{ width: 6 }, { height: 4 }} //ainda precisa ajustar o tamanho do icon
             >
@@ -73,6 +90,7 @@ const Mapa = ({ navigation }) => {
             <ScrollView
                 style={style.placesContainer}
                 horizontal={true}
+                key={vendedor.id}
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled={true}>
                 <View style={style.place}>
@@ -85,40 +103,58 @@ const Mapa = ({ navigation }) => {
 
     return (
         <View style={style.container}>
-            <MapView
-                //ref={map => this.mapView = map}
-                style={style.map}
-                provider={PROVIDER_GOOGLE}
-                initialRegion={origin}
-                showsUserLocation={true}
-                loadingEnabled={true}
-                customMapStyle={mapDarkStyle}
-            >
-                {
-                    mapMarkers()
-                }
-                {destination &&
-                    <MapViewDirections
-                        origin={origin}
-                        destination={destination}
-                        apikey={config.googleApi}
-                        strokeWidth={3}
-                        onReady={result => {
-                            //console.log(result);
-                        }}
-                    />
-                }
+            <TouchableWithoutFeedback onPress={() => setVendedorMarcado([])}>
+                <MapView
+                    //ref={map => this.mapView = map}
+                    style={style.map}
+                    provider={PROVIDER_GOOGLE}
+                    initialRegion={origin}
+                    showsUserLocation={true}
+                    loadingEnabled={true}
+                    customMapStyle={mapDarkStyle}
+                >
+                    {
+                        mapMarkers()
+                    }
+                    {destination &&
+                        <MapViewDirections
+                            origin={origin}
+                            destination={destination}
+                            apikey={config.googleApi}
+                            strokeWidth={3}
+                            onReady={result => {
+                                //console.log(result);
+                            }}
+                        />
+                    }
+                </MapView>
+            </TouchableWithoutFeedback>
 
-            </MapView>
-            {
-                cardapioMarker()
+        <FlatList 
+            data={vendedorMarcado}
+            keyExtractor={item => item.id}
+            style={{flex: 1, marginTop: 15, marginBottom: 15}}
+            ListEmptyComponent={ // QUANDO TIVER VAZIO A LISTA
+                <View style={style.emptyComponent}>
+                    <Text>Cardapio Vazio</Text>
+                </View>
+            } 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ marginBottom: 33 }}
+            renderItem={({ item }) => 
+                <View style={style.place}>
+                    <View style={style.itemPlace}> 
+                        <Text>{item.name}</Text>
+                        <Text>{item.price}</Text>
+                    </View>
+                </View>
             }
-        </View>
+        />
+    </View>
     )
 
 }
 
-const { height, width } = Dimensions.get('window');
 
 const style = StyleSheet.create({
     container: {
@@ -139,12 +175,25 @@ const style = StyleSheet.create({
         maxHeight: 200,
         backgroundColor: 'transparent',
     },
+    emptyComponent: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     place: {
-        width: width - 40,
         maxHeight: 200,
         borderRadius: 5,
         backgroundColor: '#fff',
         marginHorizontal: 20,
+        padding: 5,
+        marginBottom: 8,
+
+    },
+    itemPlace: {
+        paddingHorizontal: 18,
+        padding: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     text1: {
         paddingHorizontal: 'center',
