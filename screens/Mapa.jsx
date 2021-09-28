@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -7,6 +7,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import config from '../config/index.json';
 import MapViewDirections from 'react-native-maps-directions';
 import database from '../config/firebaseConfig';
+import { mapDarkStyle } from '../assets/map/dark';
 
 const Mapa = ({ navigation }) => {
     const [origin, setOrigin] = useState(null);
@@ -20,7 +21,7 @@ const Mapa = ({ navigation }) => {
                 list.push({ ...doc.data(), id: doc.id })
             })
             setVendedores(list)
-            //console.log(list)
+            console.log(list)
             //console.log(list[0].Lat)
         })
     }, [])
@@ -49,16 +50,49 @@ const Mapa = ({ navigation }) => {
             <Marker coordinate={{ latitude: vendedor.Lat, longitude: vendedor.Lng }}
                 title={vendedor.Nome}
                 description={vendedor.Descricao}
-                key={vendedor.id}>
+                key={vendedor.id}
+                icon={require('../assets/img/map_marker.png')}
+                style={{ width: 6 }, { height: 4 }} //ainda precisa ajustar o tamanho do icon
+            >
+                <Callout tooltip>
+                    <View>
+                        <View style={style.bubble}>
+                            <Text style={style.textCalloutDescricao}>{vendedor.Descricao}</Text>
+                            <Text>{vendedor.Nome}</Text>
+                        </View>
+                        <View style={style.arrowBorder} />
+                        <View style={style.arrow} />
+                    </View>
+                </Callout>
             </Marker>
         ))
     }
+
+    function cardapioMarker() {
+        return vendedores.map(vendedor => (
+            <ScrollView
+                style={style.placesContainer}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                pagingEnabled={true}>
+                <View style={style.place}>
+                    <Text>{vendedor.Cardapio}</Text>
+                </View>
+
+            </ScrollView>
+        ))
+    }
+
     return (
         <View style={style.container}>
-            <MapView style={style.map}
+            <MapView
+                //ref={map => this.mapView = map}
+                style={style.map}
                 provider={PROVIDER_GOOGLE}
                 initialRegion={origin}
                 showsUserLocation={true}
+                loadingEnabled={true}
+                customMapStyle={mapDarkStyle}
             >
                 {
                     mapMarkers()
@@ -74,32 +108,17 @@ const Mapa = ({ navigation }) => {
                         }}
                     />
                 }
-            </MapView>
 
-            <View style={style.search}>
-                <GooglePlacesAutocomplete
-                    placeholder='Qual local você procura?'
-                    onPress={(data, details = null) => {
-                        setDestination({
-                            latitude: details.geometry.location.lat,
-                            longitude: details.geometry.location.lng,
-                            latitudeDelta: 0.00922, //proximidade do satelite
-                            longitudeDelta: 0.00421, //0.0 >>> menos proximo - 0.00 mais proximo
-                        });
-                    }}
-                    query={{
-                        key: config.googleApi,
-                        language: 'pt-br',
-                    }}
-                    enablePoweredByContainer={false}
-                    fetchDetails={true}
-                    styles={{ listView: { height: 100 } }}
-                />
-            </View>
+            </MapView>
+            {
+                cardapioMarker()
+            }
         </View>
     )
 
 }
+
+const { height, width } = Dimensions.get('window');
 
 const style = StyleSheet.create({
     container: {
@@ -114,6 +133,18 @@ const style = StyleSheet.create({
     search: {
         height: '30%',
         backgroundColor: '#ffff',
+    },
+    placesContainer: {
+        width: '100%',
+        maxHeight: 200,
+        backgroundColor: 'transparent',
+    },
+    place: {
+        width: width - 40,
+        maxHeight: 200,
+        borderRadius: 5,
+        backgroundColor: '#fff',
+        marginHorizontal: 20,
     },
     text1: {
         paddingHorizontal: 'center',
@@ -139,7 +170,7 @@ const style = StyleSheet.create({
     },
     //Callout Bubble
     bubble: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignSelf: 'flex-start',
         backgroundColor: '#fff',
         borderRadius: 6,
@@ -168,9 +199,15 @@ const style = StyleSheet.create({
         alignSelf: 'center',
         marginTop: -0.5,
     },
-    image: {
-        width: 120,
-        height: 80,
+    textCalloutDescricao: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: "#000",
+    },
+    textCalloutNome: {
+        fontSize: 15,
+        textAlign: 'center',
+        color: '#000',
     },
 });
 export default Mapa;
