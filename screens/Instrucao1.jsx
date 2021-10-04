@@ -8,7 +8,8 @@ const slides = [
         key: '1',
         title: 'Localize',
         text: 'Veja os vendedores ambulantes mais próximos de você.',
-        image: require('../assets/img/tela1.png')
+        image: require('../assets/img/tela1.png'),
+        backgroundColor: '#e54f4f'
     },
     {
         key: '2',
@@ -24,33 +25,32 @@ const slides = [
     }
 ];
 
-const Instrucao1 = ({navigation}) => {
+const Instrucao1 = ({ navigation }) => {
     const [showHome, setShowHome] = useState(false);
 
-    function renderSlides({ item }){
-        return(
-            <View style={{flex:1}}>
-                 <LinearGradient // Background Linear Gradient
+    function renderSlides({ item }) {
+        return (
+            <View style={{ flex: 1 }}>
+                <LinearGradient // Background Linear Gradient
                     colors={['#e54f4f', '#fff']}
-                    style={styles.background}/>
+                    style={styles.background} />
                 <Image source={item.image}
                     style={{
                         paddingTop: 400,
-                        resizeMode: 'cover',
-                        height: '73%',
-                        width: '100%',
+                        resizeMode: 'contain',
+                        height: '65%',
+                        width: '90%',
                         alignSelf: 'center',
-                    }}/>
+                    }} />
                 <Text style={{
-                    paddingTop: 15,
                     paddingBottom: 10,
-                    fontSize: 25,
+                    fontSize: 27,
                     textAlign: 'center',
                     fontWeight: 'bold',
                 }}>{item.title}</Text>
                 <Text style={{
                     paddingHorizontal: 25,
-                    fontSize: 15,
+                    fontSize: 17,
                     textAlign: 'center',
                     color: '#000',
                 }}>{item.text}</Text>
@@ -58,26 +58,27 @@ const Instrucao1 = ({navigation}) => {
         )
     }
 
-    if(showHome){
+    if (showHome) {
         return <Text>ENTROU NA HOME</Text>
-    } else{
-        return(
+    } else {
+        return (
             <AppIntroSlider
                 renderItem={renderSlides}
                 data={slides}
                 activeDotStyle={{
                     backgroundColor: '#000',
-                    width: 30 
+                    width: 30
                 }}
-                style={{backgroundColor:'#fff'}}
-                renderPrevButton={() => <Text>Anterior</Text>}
-                renderNextButton={() => <Text>Próximo</Text>}
-                renderDoneButton={() => <Text>Ir para o App!</Text>}
+                style={{ backgroundColor: '#fff' }}
+                showPrevButton={true}
+                renderPrevButton={() => <Text style={styles.button}>Anterior</Text>}
+                renderNextButton={() => <Text style={styles.button}>Próximo</Text>}
+                renderDoneButton={() => <Text style={styles.button}>Ir para o App!</Text>}
                 onDone={() => navigation.navigate("Mapa")}
             />
         );
     }
-    
+
 }
 
 const styles = StyleSheet.create({
@@ -87,7 +88,12 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0,
         height: 300,
-      },
+    },
+    button: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
 });
 
 export default Instrucao1;
