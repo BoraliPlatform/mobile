@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import uuid from "react-native-uuid"
 import config from '../config/index.json';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapViewDirections from 'react-native-maps-directions';
 import database from '../config/firebaseConfig';
 import { mapDarkStyle } from '../assets/map/dark';
@@ -101,7 +102,6 @@ const Mapa = ({ navigation }) => {
                     showsUserLocation={true}
                     loadingEnabled={true}
                     customMapStyle={mapDarkStyle}
-
                 >
                     {
                         mapMarkers()

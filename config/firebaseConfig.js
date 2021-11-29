@@ -8,22 +8,21 @@ import "firebase/storage";
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBOWQFi_1gaouixo1-NwA2MTvOClWulszo",
-    authDomain: "borali-87b02.firebaseapp.com",
-    databaseURL: "https://borali-87b02-default-rtdb.firebaseio.com",
-    projectId: "borali-87b02",
-    storageBucket: "borali-87b02.appspot.com",
-    messagingSenderId: "685164751648",
-    appId: "1:685164751648:web:86646e6e14d6a0cb108545",
-    measurementId: "G-D0GHG2R9K0"
-  };
+  apiKey: "AIzaSyCc1EEXWw4ESDKFwZQYl9wUpZ9c5icWxcg",
+  authDomain: "borali-tcc.firebaseapp.com",
+  projectId: "borali-tcc",
+  storageBucket: "borali-tcc.appspot.com",
+  messagingSenderId: "337663756550",
+  appId: "1:337663756550:web:6c6d6fb5107a95068b3687",
+  measurementId: "G-8KR2NML03Z"
+};
 
 firebase.initializeApp(firebaseConfig);
 if (!firebase.apps.length) {
-    firebase.initializeApp({});
- }else {
-    firebase.app(); // if already initialized, use that one
- }
+   firebase.initializeApp({});
+} else {
+   firebase.app(); // if already initialized, use that one
+}
 
 const database = firebase.firestore();
 export default database;

@@ -1,15 +1,42 @@
 import React, { useState } from 'react';
+import { MotiView, MotiImage } from 'moti';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView, Linking } from 'react-native';
 const Home = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
+    <MotiView 
+    from={{
+      opacity: 0,
+    }}
+    animate={{
+      opacity: 1,
+    }}
+    transition={{
+      type: 'timing',
+      duration: 4000, 
+    }}
+    style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <TouchableOpacity onPress={() => navigation.navigate("Instrucao1")}>
-          <Image source={require('../assets/img/iconBORALI.png')} style={styles.img} />
+          <MotiImage 
+          source={require('../assets/img/iconBORALI.png')} 
+          style={styles.img} 
+          from={{
+            rotate: '100deg',
+            opacity: 0
+          }}
+          animate={{
+            rotate: '0deg',
+            opacity: 1
+          }}
+          transition={{
+            type: 'timing',
+            duration: 1500
+          }}
+          />
           <Text style={styles.text}>Borali</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </MotiView>
   );
 }
 
